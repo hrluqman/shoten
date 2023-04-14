@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,400;0,600;1,300&family=Sora:wght@400;600&display=swap');
+
+$color-white: #EFF1F3;
+$color-black: #272727;
+$color-primary: #009FB7;
+$color-secondary: #2C74B3;
+
+// GENERAL //
+html, body {
+    background: $color-white!important;
+    font-family: 'Sora', sans-serif!important;
+    scroll-behavior: smooth;
+}
+
+h1, h2 {
+    font-family: 'Josefin Sans', sans-serif!important;
+}
+
+// CONSUMER PAGE //
+nav {
+    transition: 0.2s all ease-out;
+    .nav-title {
+        font-family: 'Josefin Sans', sans-serif;
+    }
+    .menu.login .log-text {
+        transform: translateX(10rem);
+        transition: 0.3s all ease-out;
+    }
+    .menu.login:hover .log-text {
+        transform: translateX(0px);
+    }
+}
+
+section {
+    background-color: $color-white;
+}
+
+.hero-section {
+    position: relative;
+    background: url('/images/texture.jpg');
+    .hero-cover {
+        filter: drop-shadow(2px 5px 6px $color-black);
+    }
+    .btn-action, .arrow-action {
+        transition: 0.2s all ease-out;
+    }
+    .arrow-action {
+        width: 0px;
+        margin-left: 0;
+        overflow: hidden;
+    }
+    .btn-action:hover {
+        border-radius: 8px;
+        background-color: unset;
+        .arrow-action {
+            width: 20px;
+            margin-left: 0.75rem;
+        }
+    }
+}
+.hero-section::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: linear-gradient(to bottom, rgba(241,241,241,0), rgba(241,241,241, 1) 90%);
+    width: 100%;
+    height: 4em;
+}
+
+.img-container {
+    aspect-ratio: 1.25/1;
+    img {
+        position: absolute;
+        top: -50px;
+        margin: 0;
+    }
+}
+
+.book-detail:hover img {
+    animation: upDown 1s ease-in-out infinite;
+}
+
+@keyframes upDown {
+    0% {
+        top: -50px;
+    }
+    50% {
+        top: -45px;
+    }
+    100% {
+        top: -50px;
+    }
+}
+
+// DASHBOARD //
+.side-nav {
+    margin-top: 0!important;
+
+    .side-menu {
+        transition: 0.2s all ease-out;
+        margin-top: 0!important;
+    }
+}
+
+.dashboard-container {
+    margin-inline-start: 0!important;
+}
+
+.pagination-container .page-link.active {
+    color: $color-secondary;
+}
