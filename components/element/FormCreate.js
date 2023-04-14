@@ -1,28 +1,61 @@
-import {
-    FormControl,
-    FormLabel,
-    FormErrorMessage,
-    FormHelperText,
-    Box,
-    Input,
-    Button
-  } from '@chakra-ui/react'
-import color from '@/lib/color';
+import { Button } from '@chakra-ui/react'
+import FormInput from './FormInput';
+import { useState } from "react";
 
 const FormCreate = () => {
+
+    const [values, setValues] = useState({
+        title: "",
+        price: "",
+        author: "",
+    });
+    
+    const inputs = [
+        {
+            id: 1,
+            name: "title",
+            label: "Title",
+            type: "text",
+            errorMessage: "Title should be 1-50 characters and contain only letters and numbers!",
+            pattern: "^[A-Za-z0-9 ]{1,50}$",
+            required: true,
+        },
+        {
+            id: 2,
+            name: "price",
+            label: "Price",
+            type: "number",
+            errorMessage: "Price should be numbers!",
+            pattern: "^[1-9]\d*(\.\d{1,2})?$",
+            required: true,
+        },
+        {
+            id: 3,
+            name: "author",
+            label: "Author",
+            type: "text",
+            errorMessage: "Author should be 1-20 characters and contain only letters!",
+            pattern: "^[A-Za-z]{1,20}$",
+            required: true,
+        }
+    ]
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log(values);
+    }
+
+    const onChange = (e) => {
+        setValues({ ...values, [e.target.name]: e.target.value })
+    }
+
     return (  
-        <FormControl isRequired>
-            <FormLabel mb={1} fontSize='sm'>Book Title</FormLabel>
-            <Input id="title" type='text' maxLength={50} borderColor={color['primary']} mb={3} _hover={{borderColor: color['primary']}} />
-            <FormErrorMessage>Email is required.</FormErrorMessage>
-            <FormLabel mb={1} fontSize='sm'>Price</FormLabel>
-            <Input id="price" type='number' borderColor={color['primary']} mb={3} _hover={{borderColor: color['primary']}} />
-            <FormLabel mb={1} fontSize='sm'>Author</FormLabel>
-            <Input id="author" type='text' maxLength={20} borderColor={color['primary']} mb={3} _hover={{borderColor: color['primary']}} />
-            <Box display='flex' justifyContent='center' alignItems='center' width='100%'>
-                <Button bg='gray.300' width="50%" mt={4} mx='auto' type='submit'>Submit</Button>
-            </Box>
-        </FormControl>
+        <form className="form-container" onSubmit={handleSubmit}>
+            {inputs.map((input)=> (
+                <FormInput key={input.id} {...input} value={values[input.name]} onChange={onChange} />
+            ))}
+            <Button bg='gray.300' width="100%" mt={4} type='submit'>Submit</Button>
+        </form>
     );
 }
  
