@@ -1,4 +1,4 @@
-import { Button } from '@chakra-ui/react'
+import { VStack, Button } from '@chakra-ui/react'
 import FormInput from './FormInput';
 import { useState } from "react";
 
@@ -54,6 +54,13 @@ const FormCreate = () => {
             {inputs.map((input)=> (
                 <FormInput key={input.id} {...input} value={values[input.name]} onChange={onChange} />
             ))}
+            <VStack className="input-container" width='100%'>
+                <label>Status</label>
+                <select id="status" name="status">
+                    <option value="available">Available</option>
+                    <option value="unavailable">Unavailable</option>
+                </select>
+            </VStack>
             <Button bg='gray.300' width="100%" mt={4} type='submit'>Submit</Button>
         </form>
     );
