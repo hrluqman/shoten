@@ -2,10 +2,14 @@ import Navbar from "@/components/element/Navbar";
 import PageHead from "@/components/element/PageHead";
 import FormInput from "@/components/element/FormInput";
 import color from "@/lib/color";
-import { VStack, Heading, Box, Button, Link, Text } from "@chakra-ui/react";
+import { VStack, Heading, Box, Button, Link, Text, Spinner, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 
 const Signup = () => {
+
+    const toast = useToast()
+    const [ loading, setLoading ] = useState(false)
+    const [ reset, setReset ] = useState(false)
 
     const [values, setValues] = useState({
         name: "",
@@ -52,9 +56,40 @@ const Signup = () => {
         }
     ]
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(values);
+        setLoading(true);
+        const dataInput = {
+            method: 'POST',
+            body: JSON.stringify({
+                name: values.name,
+                email: values.email,
+                password: values.password
+            }),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+        }
+        await fetch('/api/userSignup', dataInput).then((response)=>{return response.json()}).then((data) => {
+            if(data.status=="Success") {
+                setReset(true)
+                setValues({
+                    name: "",
+                    email: "",
+                    password: "",
+                    confirmPassword: "",
+                });
+                setLoading(false);
+                setTimeout(() => {
+                    setReset(false)
+                }, 500);
+                toast({
+                    title: `Signed Up Successfully!`,
+                    status: 'success',
+                    isClosable: true,
+                })
+            }
+        }).catch(error => console.error('Error:', error));
     }
 
     const onChange = (e) => {
@@ -70,9 +105,9 @@ const Signup = () => {
                 <Box bg={color['white']} width={{ base: '70%', md: '50%', lg: '40%' }} px={4} pb={6} pt={3} borderRadius='12px'>
                     <form className="form-container" onSubmit={handleSubmit}>
                         {inputs.map((input)=> (
-                            <FormInput key={input.id} {...input} value={values[input.name]} onChange={onChange} />
+                            <FormInput key={input.id} {...input} value={values[input.name]} onChange={onChange} reset={reset} />
                         ))}
-                        <Button bg='gray.300' width="100%" mt={4} type='submit'>Sign Up</Button>
+                        <Button bg='gray.300' width="100%" mt={4} type='submit'>{loading && <Spinner mr={3} />} Sign Up</Button>
                     </form>
                     <Link href="/login" _hover={{color: color['primary']}}><Text fontSize='xs' textAlign='center' mt={3} width='90%' mx='auto'>Back to Login</Text></Link>
                 </Box>

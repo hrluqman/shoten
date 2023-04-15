@@ -17,7 +17,7 @@ const handler = async (req, res) => {
         }
     }
     else {
-        return res.status(200).json('Method Not Allowed');
+        return res.status(405).json('Method Not Allowed');
     }
 }  
 

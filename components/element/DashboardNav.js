@@ -1,6 +1,7 @@
 import { Flex, Link, HStack, Text } from "@chakra-ui/react";
 import color from "@/lib/color";
 import { AiOutlineLogout } from "react-icons/ai";
+import { signOut } from 'next-auth/react'
 
 const DashboardNav = () => {    
     return (  
@@ -9,7 +10,7 @@ const DashboardNav = () => {
             <Flex>
                 <Link className="menu" color={color['white']} fontSize='xs' fontWeight="semibold" style={{ textDecoration: 'none' }} _focus={{boxShadow: 'none'}} mx={3} href="/admin/dashboard">DASHBOARD</Link>
                 <Link className="menu" color={color['white']} fontSize='xs' fontWeight="semibold" style={{ textDecoration: 'none' }} _focus={{boxShadow: 'none'}} mx={3} href="#">SETTINGS</Link>
-                <Link className="menu login" color={color['white']} fontSize='lg' fontWeight="semibold" style={{ textDecoration: 'none' }} _focus={{boxShadow: 'none'}} mx={3} href="/login">
+                <Link className="menu login" color={color['white']} fontSize='lg' fontWeight="semibold" style={{ textDecoration: 'none' }} _focus={{boxShadow: 'none'}} mx={3} onClick={()=>signOut({callbackUrl: '/'})}>
                     <HStack overflow='hidden'>
                         <AiOutlineLogout /><Text className="log-text" fontSize='xs'>LOGOUT</Text>
                     </HStack>
