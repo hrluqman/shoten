@@ -8,11 +8,20 @@ import {
     Td,
     TableContainer,
     Flex,
-    Link
+    Link,
+    Box
   } from '@chakra-ui/react'
+import { AiOutlineEdit } from "react-icons/ai";
 import color from '@/lib/color';
 
-const TableList = () => {
+const TableList = ({ data, paginateList, currentPage }) => {
+    const bookList = data.data;
+    const totalPage = data.totalPage;
+    var pagesArray = [];
+    for (var i = 1; i <= totalPage; i++) {
+        var classStr = `page-link ${(i==currentPage) ? 'active' : ''}`;
+        pagesArray.push(<Link key={i} id={i} className={classStr} mx={3} my={3} onClick={paginateList}>{i}</Link>);
+    }
     return (  
         <VStack width='100%'>
             <TableContainer width='100%' style={{border: `1px solid ${color['secondary']}`}}>
@@ -23,28 +32,24 @@ const TableList = () => {
                             <Th color={color['white']}>Title</Th>
                             <Th color={color['white']}>Price (RM)</Th>
                             <Th color={color['white']}>Author</Th>
+                            <Th color={color['white']}>Status</Th>
                         </Tr>
                     </Thead>
                     <Tbody>
-                        <Tr>
-                            <Td>1</Td>
-                            <Td>The Tale of Uzumaki Naruto</Td>
-                            <Td>120.00</Td>
-                            <Td>Jiraiya</Td>
-                        </Tr>
-                        <Tr>
-                            <Td>2</Td>
-                            <Td>The Tale of Uzumaki Naruto</Td>
-                            <Td>120.00</Td>
-                            <Td>Jiraiya</Td>
-                        </Tr>
+                        {bookList.map((book)=>(
+                            <Tr key={book.id}>
+                                <Td>{book.id}</Td>
+                                <Td textTransform='capitalize'>{book.book_title}</Td>
+                                <Td>{book.book_price}</Td>
+                                <Td>{book.book_author}</Td>
+                                <Td textTransform='capitalize'>{book.book_status}</Td>
+                            </Tr>
+                        ))}
                     </Tbody>
                 </Table>
             </TableContainer>
             <Flex className="pagination-container" width='100%' justifyContent='center' alignItems='center'>
-                <Link className='page-link' mx={3} my={3}>&laquo;</Link>
-                <Link className='page-link active' mx={3} my={3}>1</Link>
-                <Link className='page-link' mx={3} my={3}>&raquo;</Link>
+                {pagesArray}
             </Flex>
         </VStack>
     );
