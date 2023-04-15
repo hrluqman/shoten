@@ -129,6 +129,17 @@ section {
 .input-container input:invalid[focused="true"] ~ span {
     display: block;
 }
+.input-container label.status {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    .info-status {
+        display: block;
+        color: $color-black;
+        width: fit-content;
+        margin: 0 0 0 0.5rem!important;
+    }
+}
 
 // DASHBOARD //
 .side-nav {
@@ -146,6 +157,7 @@ section {
 
 .pagination-container .page-link.active {
     color: $color-secondary;
+    font-weight: 700;
 }
 
 /* Scrollbar */

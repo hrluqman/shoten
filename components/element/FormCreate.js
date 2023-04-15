@@ -1,14 +1,19 @@
-import { VStack, Button } from '@chakra-ui/react'
+import { VStack, Button, Spinner, useToast } from '@chakra-ui/react'
 import FormInput from './FormInput';
 import { useState } from "react";
 
 const FormCreate = () => {
 
+    const toast = useToast()
+    const [ loading, setLoading ] = useState(false)
+    const [ reset, setReset ] = useState(false)
+
     const [values, setValues] = useState({
         title: "",
         price: "",
         author: "",
-    });
+        status: "available"
+    })
     
     const inputs = [
         {
@@ -16,8 +21,8 @@ const FormCreate = () => {
             name: "title",
             label: "Title",
             type: "text",
-            errorMessage: "Title should be 1-50 characters and contain only letters and numbers!",
-            pattern: "^[A-Za-z0-9 ]{1,50}$",
+            errorMessage: "Title should be 1-60 characters and contain only letters and numbers!",
+            pattern: `^[a-zA-Z0-9!@#$%^&*()_+-=':",./? ]{1,60}$`,
             required: true,
         },
         {
@@ -35,33 +40,60 @@ const FormCreate = () => {
             label: "Author",
             type: "text",
             errorMessage: "Author should be 1-20 characters and contain only letters!",
-            pattern: "^[A-Za-z]{1,20}$",
+            pattern: "^[A-Za-z ]{1,20}$",
             required: true,
         }
     ]
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log(values);
-    }
 
     const onChange = (e) => {
         setValues({ ...values, [e.target.name]: e.target.value })
     }
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        const dataInput = {
+            method: 'POST',
+            body: JSON.stringify(values),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+        }
+        await fetch('/api/postProducts', dataInput).then((response)=>{return response.json()}).then((data) => {
+            if(data.status=="Success") {
+                setReset(true)
+                setValues({
+                    title: "",
+                    price: "",
+                    author: "",
+                    status: "available"
+                });
+                setLoading(false);
+                setTimeout(() => {
+                    setReset(false)
+                }, 500);
+                toast({
+                    title: `Submit Successfully!`,
+                    status: 'success',
+                    isClosable: true,
+                })
+            }
+        }).catch(error => console.error('Error:', error));
+    }
+
     return (  
         <form className="form-container" onSubmit={handleSubmit}>
             {inputs.map((input)=> (
-                <FormInput key={input.id} {...input} value={values[input.name]} onChange={onChange} />
+                <FormInput key={input.id} {...input} value={values[input.name]} onChange={onChange} reset={reset} />
             ))}
             <VStack className="input-container" width='100%'>
-                <label>Status</label>
-                <select id="status" name="status">
+                <label className="status">Status <span className="info-status">(Only book with 'Available' status will be shown in the home page)</span></label>
+                <select id="status" name="status" onChange={onChange}>
                     <option value="available">Available</option>
                     <option value="unavailable">Unavailable</option>
                 </select>
             </VStack>
-            <Button bg='gray.300' width="100%" mt={4} type='submit'>Submit</Button>
+            <Button bg='gray.300' width="100%" mt={4} type='submit'> {loading && <Spinner mr={3} />} Submit</Button>
         </form>
     );
 }
