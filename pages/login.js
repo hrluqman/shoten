@@ -2,11 +2,13 @@ import Navbar from "@/components/element/Navbar";
 import PageHead from "@/components/element/PageHead";
 import FormInput from "@/components/element/FormInput";
 import color from "@/lib/color";
+import { useRouter } from 'next/router';
 import { VStack, Heading, Box, Button, Link, Text, Spinner, useToast } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { signIn, signOut, useSession } from 'next-auth/react'
 
 const Login = () => {
+    const router = useRouter()
     const { data } = useSession()
     const [logged, setLogged] = useState(false)
     const toast = useToast()
@@ -47,8 +49,7 @@ const Login = () => {
         setLoading(true)
         try {
             const data = await signIn('credentials', {
-                redirect: true,
-                callbackUrl:'/admin/dashboard',
+                redirect: false,
                 email: values.email,
                 password: values.password
             });
@@ -59,6 +60,7 @@ const Login = () => {
                     status: 'success',
                     isClosable: true,
                 })
+                router.push('/admin/dashboard')
                 setLogged(true)
             }
             else {
