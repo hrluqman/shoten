@@ -35,7 +35,7 @@ export default function Home({ dataProps }) {
 
 export async function getServerSideProps() {
 
-  const res = await fetch(`https://shoten.vercel.app/api/getProducts?status=available&offset=0`)
+  const res = await fetch(`https://shoten.hrluqman.com/api/getProducts?status=available&offset=0`)
   const dataProps = await res.json()
 
   return { props: { dataProps } }
