@@ -1,7 +1,4 @@
 import { 
-    // Flex, 
-    // Text,
-    // Link, 
     HStack, 
     Flex, 
     Box, 
@@ -15,11 +12,14 @@ import {
     DrawerCloseButton,
     useDisclosure  
 } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
-import { AiOutlineLogin, AiOutlineMenu } from "react-icons/ai";
+import { useState, useEffect, useMemo } from "react";
+import { AiOutlineLogin, AiOutlineLogout, AiOutlineMenu } from "react-icons/ai";
 import color from "@/lib/color";
+import { signOut, useSession } from 'next-auth/react'
 
 const Navbar = () => {
+    const { data } = useSession()
+    const [logged, setLogged] = useState(false)
     const [filter, setFilter] = useState('none');
     useEffect(() => {
         window.addEventListener("scroll", () => {
@@ -27,6 +27,11 @@ const Navbar = () => {
             else setFilter('none');
         });
     }, []);
+
+    useMemo(()=>{
+        if(data?.user) setLogged(true)
+        else setLogged(false)
+    },[data])
     
     const [size, setSize] = useState("xs")
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -43,11 +48,20 @@ const Navbar = () => {
                 <Link className="menu" fontSize='xs' fontWeight="semibold" style={{ textDecoration: 'none' }} _focus={{boxShadow: 'none'}} mx={3} href="/">BOOKS</Link>
                 <Link className="menu" fontSize='xs' fontWeight="semibold" style={{ textDecoration: 'none' }} _focus={{boxShadow: 'none'}} mx={3} href="#">SHOP</Link>
                 <Link className="menu" fontSize='xs' fontWeight="semibold" style={{ textDecoration: 'none' }} _focus={{boxShadow: 'none'}} mx={3} href="#">ABOUT</Link>
+                {!logged && 
                 <Link className="menu login" fontSize='lg' fontWeight="semibold" style={{ textDecoration: 'none' }} _focus={{boxShadow: 'none'}} mx={3} href="/login">
                     <HStack overflow='hidden'>
                         <AiOutlineLogin /><Text className="log-text" fontSize='xs'>LOGIN</Text>
                     </HStack>
                 </Link>
+                }
+                {logged && 
+                <Link className="menu login" fontSize='lg' fontWeight="semibold" style={{ textDecoration: 'none' }} _focus={{boxShadow: 'none'}} mx={3} onClick={()=>signOut({callbackUrl: '/'})}>
+                    <HStack overflow='hidden'>
+                        <AiOutlineLogout /><Text className="log-text" fontSize='xs'>LOGOUT</Text>
+                    </HStack>
+                </Link>
+                }
             </Flex>
             <Box display={{ base: 'inline-block', md: 'none' }}>
                 <AiOutlineMenu cursor="pointer" color={color['black']} fontSize='28px' onClick={() => handleClick(size)} key={size} m={4} />

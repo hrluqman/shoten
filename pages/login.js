@@ -2,10 +2,15 @@ import Navbar from "@/components/element/Navbar";
 import PageHead from "@/components/element/PageHead";
 import FormInput from "@/components/element/FormInput";
 import color from "@/lib/color";
-import { VStack, Heading, Box, Button, Link, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { VStack, Heading, Box, Button, Link, Text, Spinner, useToast } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { signIn, signOut, useSession } from 'next-auth/react'
 
 const Login = () => {
+    const { data } = useSession()
+    const [logged, setLogged] = useState(false)
+    const toast = useToast()
+    const [ loading, setLoading ] = useState(false)
 
     const [values, setValues] = useState({
         email: "",
@@ -15,11 +20,10 @@ const Login = () => {
     const inputs = [
         {
             id: 1,
-            name: "name",
-            label: "Name",
-            type: "text",
-            errorMessage: "Name should be 3-10 characters and contain only letters!",
-            pattern: "^[A-Za-z]{3,10}$",
+            name: "email",
+            label: "Email",
+            type: "email",
+            errorMessage: "Please include a valid email address!",
             required: true,
         },
         {
@@ -33,9 +37,42 @@ const Login = () => {
         }
     ]
 
-    const handleSubmit = (e) => {
+    useEffect(()=>{
+        if(data?.user) setLogged(true)
+        else setLogged(false)
+    },[])
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(values);
+        setLoading(true)
+        try {
+            const data = await signIn('credentials', {
+                redirect: true,
+                callbackUrl:'/admin/dashboard',
+                email: values.email,
+                password: values.password
+            });
+
+            if(data.status == 200) {
+                toast({
+                    title: `Logged In Successfully!`,
+                    status: 'success',
+                    isClosable: true,
+                })
+                setLogged(true)
+            }
+            else {
+                toast({
+                    title: data.error,
+                    status: 'error',
+                    isClosable: true,
+                })
+            };
+            setLoading(false)
+        }
+        catch(error) {
+            console.log(error);
+        }
     }
 
     const onChange = (e) => {
@@ -46,18 +83,29 @@ const Login = () => {
         <>
             <PageHead title='Admin Login' />  
             <Navbar />
-            <VStack bg={color['primary']} justifyContent='center' alignItems='center' height='100vh'>
-                <Heading as='h2' color={color['white']}>Admin Login</Heading>
-                <Box bg={color['white']} width={{ base: '70%', md: '50%', lg: '40%' }} px={4} py={6} borderRadius='12px'>
-                    <form className="form-container" onSubmit={handleSubmit}>
-                        {inputs.map((input)=> (
-                            <FormInput key={input.id} {...input} value={values[input.name]} onChange={onChange} />
-                        ))}
-                        <Button bg='gray.300' width="100%" mt={4} type='submit'>Login</Button>
-                    </form>
-                    <Link href="/signup" _hover={{color: color['primary']}}><Text fontSize='xs' textAlign='right' mt={3} width='90%' mx='auto'>Sign up as an admin</Text></Link>
-                </Box>
-            </VStack>
+                {!logged && 
+                    <VStack bg={color['primary']} justifyContent='center' alignItems='center' height='100vh'>
+                    <Heading as='h2' color={color['white']}>Admin Login</Heading>
+                    <Box bg={color['white']} width={{ base: '70%', md: '50%', lg: '40%' }} px={4} py={6} borderRadius='12px'>
+                        <form className="form-container" onSubmit={handleSubmit}>
+                            {inputs.map((input)=> (
+                                <FormInput key={input.id} {...input} value={values[input.name]} onChange={onChange} />
+                            ))}
+                            <Button bg='gray.300' width="100%" mt={4} type='submit'>{loading && <Spinner mr={3} />} Login</Button>
+                        </form>
+                        <Link href="/signup" _hover={{color: color['primary']}}><Text fontSize='xs' textAlign='right' mt={3} width='90%' mx='auto'>Sign up as an admin</Text></Link>
+                    </Box>
+                    </VStack>
+                }
+                {logged && 
+                    <VStack bg={color['primary']} justifyContent='center' alignItems='center' height='100vh'>
+                        <Box width={{ base: '70%', md: '50%', lg: '40%' }} px={4} py={6} borderRadius='12px'>
+                            <Heading as='h2' color={color['white']} textAlign='center'>Welcome, {data?.user.name}</Heading>
+                            <Button bg='gray.300' width="100%" mt={4}><Link href="/admin/dashboard">Go to Dashboard</Link></Button>
+                            <Button bg='gray.300' width="100%" mt={4} onClick={()=>signOut({callbackUrl: '/'})}>Log Out</Button>
+                        </Box>
+                    </VStack>
+                }
         </>
     );
 }
