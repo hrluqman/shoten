@@ -52,7 +52,7 @@ export default Dashboard;
 
 export async function getServerSideProps() {
 
-    const res = await fetch(`http://localhost:3000/api/getProducts?offset=0`)
+    const res = await fetch(`https://shoten.vercel.app/api/getProducts?offset=0`)
     const dataProps = await res.json()
 
     return { props: { dataProps } }

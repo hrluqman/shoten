@@ -87,7 +87,7 @@ const FormCreate = () => {
                 <FormInput key={input.id} {...input} value={values[input.name]} onChange={onChange} reset={reset} />
             ))}
             <VStack className="input-container" width='100%'>
-                <label className="status">Status <span className="info-status">(Only book with 'Available' status will be shown in the home page)</span></label>
+                <label className="status">Status <span className="info-status">(Only book with &#39;Available&#39; status will be shown in the home page)</span></label>
                 <select id="status" name="status" onChange={onChange}>
                     <option value="available">Available</option>
                     <option value="unavailable">Unavailable</option>
