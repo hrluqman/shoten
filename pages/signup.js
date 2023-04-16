@@ -4,9 +4,11 @@ import FormInput from "@/components/element/FormInput";
 import color from "@/lib/color";
 import { VStack, Heading, Box, Button, Link, Text, Spinner, useToast } from "@chakra-ui/react";
 import { useState } from "react";
+import { useSession } from 'next-auth/react'
 
 const Signup = () => {
 
+    const { data } = useSession()
     const toast = useToast()
     const [ loading, setLoading ] = useState(false)
     const [ reset, setReset ] = useState(false)
@@ -58,38 +60,47 @@ const Signup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        const dataInput = {
-            method: 'POST',
-            body: JSON.stringify({
-                name: values.name,
-                email: values.email,
-                password: values.password
-            }),
-            headers: {
-              'Content-Type': 'application/json'
-            }
+        if(data?.user) {
+            toast({
+                title: `Please logout to sign up a new user.`,
+                status: 'error',
+                isClosable: true,
+            })
         }
-        await fetch('/api/userSignup', dataInput).then((response)=>{return response.json()}).then((data) => {
-            if(data.status=="Success") {
-                setReset(true)
-                setValues({
-                    name: "",
-                    email: "",
-                    password: "",
-                    confirmPassword: "",
-                });
-                setLoading(false);
-                setTimeout(() => {
-                    setReset(false)
-                }, 500);
-                toast({
-                    title: `Signed Up Successfully!`,
-                    status: 'success',
-                    isClosable: true,
-                })
+        else {
+            setLoading(true);
+            const dataInput = {
+                method: 'POST',
+                body: JSON.stringify({
+                    name: values.name,
+                    email: values.email,
+                    password: values.password
+                }),
+                headers: {
+                  'Content-Type': 'application/json'
+                }
             }
-        }).catch(error => console.error('Error:', error));
+            await fetch('/api/userSignup', dataInput).then((response)=>{return response.json()}).then((data) => {
+                if(data.status=="Success") {
+                    setReset(true)
+                    setValues({
+                        name: "",
+                        email: "",
+                        password: "",
+                        confirmPassword: "",
+                    });
+                    setLoading(false);
+                    setTimeout(() => {
+                        setReset(false)
+                    }, 500);
+                    toast({
+                        title: `Signed Up Successfully!`,
+                        status: 'success',
+                        isClosable: true,
+                    })
+                }
+            }).catch(error => console.error('Error:', error));
+        }
     }
 
     const onChange = (e) => {

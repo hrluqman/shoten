@@ -4,7 +4,7 @@ import FormInput from "@/components/element/FormInput";
 import color from "@/lib/color";
 import { useRouter } from 'next/router';
 import { VStack, Heading, Box, Button, Link, Text, Spinner, useToast } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { signIn, signOut, useSession } from 'next-auth/react'
 
 const Login = () => {
@@ -39,10 +39,10 @@ const Login = () => {
         }
     ]
 
-    useEffect(()=>{
+    useMemo(()=>{
         if(data?.user) setLogged(true)
         else setLogged(false)
-    },[])
+    },[data])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
