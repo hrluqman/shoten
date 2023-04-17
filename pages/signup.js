@@ -99,6 +99,14 @@ const Signup = () => {
                         isClosable: true,
                     })
                 }
+                else {
+                    toast({
+                        title: data.status,
+                        status: 'error',
+                        isClosable: true,
+                    })
+                    setLoading(false);
+                }
             }).catch(error => console.error('Error:', error));
         }
     }
